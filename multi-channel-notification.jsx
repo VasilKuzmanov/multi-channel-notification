@@ -23,16 +23,20 @@ const NotificationDatePicker = () => {
 
     if (type === 'email') {
       const phoneFromDay = selectedDays.phoneFromDay;
+      const phoneToDay = selectedDays.phoneToDay;
       return [1, 2, 3, 4, 5, 6, 7]
         .filter(day => !allSelectedDays.includes(day))
-        .filter(day => phoneFromDay ? day < phoneFromDay : true);
+        .filter(day => phoneFromDay ? day < phoneFromDay : true)
+        .filter(day => phoneToDay ? day < phoneToDay : true);
     }
 
 
     if (type === 'phone') {
+      const emailFromDay = selectedDays.emailFromDay;
       const emailToDay = selectedDays.emailToDay;
       return [1, 2, 3, 4, 5, 6, 7]
         .filter(day => !allSelectedDays.includes(day))
+        .filter(day => emailFromDay ? day > emailFromDay : true)
         .filter(day => emailToDay ? day > emailToDay : true);
     }
 
