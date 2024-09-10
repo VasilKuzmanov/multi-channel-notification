@@ -20,45 +20,36 @@ const NotificationDatePicker = () => {
  
   const getValidOptions = (type) => {
     const allSelectedDays = getAllSelectedDays();
- 
-    if (type === 'emailFrom') {
-      const phoneFromDay = selectedDays.phoneFromDay;
-      const emailToDay = selectedDays.emailToDay;
-      return [2, 3, 4, 5, 6, 7]
-        .filter(day => !allSelectedDays.includes(day))
-        .filter(day => phoneFromDay ? day < phoneFromDay : true)
-        .filter(day => emailToDay ? emailToDay - day >= 2 : true);
+    const { emailFromDay, emailToDay, phoneFromDay, phoneToDay } = selectedDays;
+  
+    switch (type) {
+      case 'emailFrom':
+        return [2, 3, 4, 5, 6, 7]
+          .filter(day => !allSelectedDays.includes(day))
+          .filter(day => phoneFromDay ? day < phoneFromDay : true)
+          .filter(day => emailToDay ? emailToDay - day >= 2 : true);
+  
+      case 'emailTo':
+        return [4, 5, 6, 7]
+          .filter(day => !allSelectedDays.includes(day))
+          .filter(day => phoneToDay ? day < phoneToDay : true)
+          .filter(day => emailFromDay ? day - emailFromDay >= 2 : true);
+  
+      case 'phoneFrom':
+        return [3, 4, 5, 6, 7]
+          .filter(day => !allSelectedDays.includes(day))
+          .filter(day => emailFromDay ? day > emailFromDay : true)
+          .filter(day => phoneToDay ? phoneToDay - day >= 2 : true);
+  
+      case 'phoneTo':
+        return [5, 6, 7]
+          .filter(day => !allSelectedDays.includes(day))
+          .filter(day => emailToDay ? day > emailToDay : true)
+          .filter(day => phoneFromDay ? day - phoneFromDay >= 2 : true);
+  
+      default:
+        return [2, 3, 4, 5, 6, 7]
     }
-
-    if (type === 'emailTo') {
-      const phoneToDay = selectedDays.phoneToDay;
-      const emailFromDay = selectedDays.emailFromDay;
-      return [4, 5, 6, 7]
-        .filter(day => !allSelectedDays.includes(day))
-        .filter(day => phoneToDay ? day < phoneToDay : true)
-        .filter(day => emailFromDay ? day - emailFromDay >= 2 : true);
-    }
- 
-    if (type === 'phoneFrom') {
-      const emailFromDay = selectedDays.emailFromDay;
-      const phoneToDay = selectedDays.phoneToDay;
-      return [3, 4, 5, 6, 7]
-        .filter(day => !allSelectedDays.includes(day))
-        .filter(day => emailFromDay ? day > emailFromDay : true)
-        .filter(day => phoneToDay ? phoneToDay - day >= 2 : true);
-    }
-
-    if (type === 'phoneTo') {
-      const emailToDay = selectedDays.emailToDay;
-      const phoneFromDay = selectedDays.phoneFromDay;
-      return [5, 6, 7]
-        .filter(day => !allSelectedDays.includes(day))
-        .filter(day => emailToDay ? day > emailToDay : true)
-        .filter(day => phoneFromDay ? day - phoneFromDay >= 2 : true);
-    }
- 
-    return [2, 3, 4, 5, 6, 7]
-      .filter(day => !allSelectedDays.includes(day));
   };
  
  
@@ -66,20 +57,17 @@ const NotificationDatePicker = () => {
     const { id, value } = e.target;
     setSelectedDays(prevState => ({
       ...prevState,
-      [id]: value === "" ? undefined : Number(value),
+      [id]: Number(value),
     }));
   };
  
  
-  const renderOptions = (type) => {
-    return getValidOptions(type).map((day, index) => {
-      return (
-        <option key={day} value={day}>
-          Ден {day}
-        </option>
-      );
-    });
-  };
+  const renderOptions = (type) =>
+    getValidOptions(type).map((day) => (
+      <option key={type} value={day}>
+        Ден {day}
+      </option>
+    ));
   
  
   return (
@@ -126,7 +114,7 @@ const NotificationDatePicker = () => {
         <label htmlFor="appFromDay">Ден:</label>
         <select id="appFromDay" value={selectedDays.appFromDay} onChange={handleDayChange}>
           <option value="">Избери</option>
-          {renderOptions()}
+          {renderOptions('appFrom')}
         </select>
         <input value={selectedDays.appFromDay}/>
       </span>
@@ -135,7 +123,7 @@ const NotificationDatePicker = () => {
         <label htmlFor="appToDay">Ден:</label>
         <select id="appToDay" value={selectedDays.appToDay} onChange={handleDayChange}>
           <option value="">Избери</option>
-          {renderOptions()}
+          {renderOptions('appTwo')}
         </select>
         <input value={selectedDays.appToDay}/>
       </span>
